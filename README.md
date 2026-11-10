@@ -26,7 +26,9 @@
 | 09 | Inference Optimization | 405–447 |
 | 10 | AI Engineering Architecture and User Feedback | 449–492 |
 
-## ترتيب القراءة (خطة 5 أسابيع — البداية من Ch. 6)
+## الخطة التفصيلية للقراءة
+
+الخطة الكاملة يومياً وفصلاً بفصل (بكل الأقسام الفرعية وأرقام الصفحات) موجودة في [READING_PLAN.md](./READING_PLAN.md):
 
 1. **الأسبوع 1:** `Ch. 6 (RAG and Agents)` ← `Ch. 5 (Prompt Engineering)`
 2. **الأسبوع 2:** `Ch. 10 (AI Engineering Architecture and User Feedback)` ← `Ch. 1 (Introduction)`
@@ -36,9 +38,17 @@
 
 ## تنظيم المجلد
 
-- `books/`: يحتوي على ملفات الكتاب الـ PDF (مستبعدة من Git عبر `.gitignore`).
-- سيتم إضافة ملفات الشرح والملخصات هنا تباعاً أثناء القراءة.
+- `books/`: يحتوي على ملفات الكتاب الـ PDF محلياً (مستبعدة تماماً من Git عبر `.gitignore`).
+- [READING_PLAN.md](./READING_PLAN.md): خطة الدراسة والمتابعة الكاملة لجميع فصول الكتاب.
+- سيتم إضافة ملفات الشرح والملاحظات الدراسية هنا تباعاً أثناء القراءة.
+
+## إخلاء مسؤولية وحقوق الملكية (Legal & Copyright Notice)
+
+- هذا المستودع عبارة عن **ملاحظات دراسية وشرح تعليمي غير رسمي** مكتوب بأسلوب شخصي باللغة العربية مع الإشارة لأرقام الصفحات والمصطلحات كمرجع فقط.
+- **لا يحتوي المستودع على أي نسخ من الكتاب أو ملفات PDF أو اقتطاعات/صور من رسومات الكتاب الأصلية**، ولا يغني عن شراء الكتاب الأصلي.
+- جميع الحقوق الفكرية للكتاب الأصلي (*AI Engineering: Building Applications with Foundation Models*, ISBN `978-1-098-16630-4`) محفوظة للمؤلفة **Chip Huyen** ودار النشر **O'Reilly Media, Inc.**
 
 ## مصادر الكتاب الرسمية
 
+- صفحة الكتاب الرسمية: [oreil.ly/ai-engineering](https://oreil.ly/ai-engineering)
 - مستودع الأكواد والمصادر: [chiphuyen/aie-book](https://github.com/chiphuyen/aie-book)
