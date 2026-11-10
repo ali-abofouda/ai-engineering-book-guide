@@ -15,6 +15,7 @@ export default withMermaid(
       nav: [
         { text: 'الرئيسية', link: '/' },
         { text: 'خطة القراءة', link: '/READING_PLAN' },
+        { text: 'شابتر 6: RAG & Agents', link: '/notes/ch06-rag-and-agents/01-rag' },
         { text: 'عن المشروع', link: '/README' },
       ],
 
@@ -25,6 +26,12 @@ export default withMermaid(
             { text: 'الصفحة الرئيسية', link: '/' },
             { text: 'خطة القراءة الكاملة (5 أسابيع)', link: '/READING_PLAN' },
             { text: 'عن المستودع وحقوق الملكية', link: '/README' },
+          ],
+        },
+        {
+          text: 'Chapter 6: RAG and Agents',
+          items: [
+            { text: 'الجزء 1: الـ RAG (ص 253–275)', link: '/notes/ch06-rag-and-agents/01-rag' },
           ],
         },
       ],
