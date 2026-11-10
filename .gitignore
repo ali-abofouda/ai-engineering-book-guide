@@ -2,6 +2,11 @@
 books/
 *.pdf
 
+# Node & VitePress build artifacts
+node_modules/
+.vitepress/dist/
+.vitepress/cache/
+
 # OS & Editor files
 .DS_Store
 Thumbs.db

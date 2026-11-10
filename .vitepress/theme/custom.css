@@ -1,0 +1,23 @@
+:root {
+  --vp-font-family-base: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+}
+
+/* Keep code blocks, inline code, and Mermaid diagrams strictly LTR */
+.vp-doc pre,
+.vp-doc code,
+.vp-doc .language-mermaid,
+.mermaid {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Better readability for mixed Arabic + English tables */
+.vp-doc table {
+  display: table;
+  width: 100%;
+}
+
+.vp-doc th,
+.vp-doc td {
+  text-align: start;
+}

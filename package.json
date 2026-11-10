@@ -1,0 +1,18 @@
+{
+  "name": "ai-engineering-book-guide",
+  "version": "1.0.0",
+  "description": "مرجع وشرح تفصيلي شامل (صفحة بصفحة ولكل فصل) لكتاب AI Engineering للكاتبة Chip Huyen",
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "mermaid": "^11.17.2",
+    "vitepress": "^1.6.4",
+    "vitepress-plugin-mermaid": "^2.0.17"
+  }
+}
