@@ -1,0 +1,8 @@
+# Book PDFs (excluded from Git)
+books/
+*.pdf
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+desktop.ini
