@@ -12,6 +12,15 @@ export default withMermaid(
     srcExclude: ['books/**', 'node_modules/**'],
     lastUpdated: true,
 
+    markdown: {
+      math: true,
+      container: {
+        tipLabel: 'تشبيه / قاعدة ذهبية',
+        warningLabel: 'تنبيه مهم',
+        infoLabel: 'معلومة هامشية',
+      },
+    },
+
     head: [
       [
         'link',

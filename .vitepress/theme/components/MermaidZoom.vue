@@ -77,8 +77,8 @@ onUnmounted(() => {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(15, 20, 25, 0.85);
-  backdrop-filter: blur(4px);
+  background: rgba(11, 17, 23, 0.88);
+  backdrop-filter: blur(6px);
   display: flex;
   flex-direction: column;
   padding: 16px;
@@ -130,12 +130,21 @@ onUnmounted(() => {
 
 .aie-zoom-canvas {
   background: #ffffff;
-  border-radius: 12px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 14px;
   padding: 24px;
-  max-width: 900px;
-  width: 90%;
+  max-width: 920px;
+  width: 92%;
   transform-origin: center center;
   transition: transform 0.15s ease;
   direction: ltr;
+}
+
+:global(.dark) .aie-zoom-canvas {
+  background: #131b23;
+}
+
+:global(.dark) .aie-zoom-canvas svg {
+  filter: invert(0.9) hue-rotate(180deg);
 }
 </style>
