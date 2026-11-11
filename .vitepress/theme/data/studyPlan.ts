@@ -63,7 +63,8 @@ export const CHAPTERS_PLAN: ChapterItem[] = [
         title: 'الدفعة 4: Retrieval Optimization (Chunking, Query Rewriting, Contextual)',
         pagesRange: '267–272',
         pageCount: 6,
-        available: false,
+        link: '/notes/ch06-rag-and-agents/01-rag#batch-4',
+        available: true,
       },
       {
         id: 'ch06-b5',

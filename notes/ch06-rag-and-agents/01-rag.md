@@ -509,3 +509,186 @@ flowchart TB
 />
 
 <BatchCheck id="ch06-b3" label="الدفعة 3 (ص 262–266): Vector Databases وANN ومقارنة الخوارزميات" />
+
+---
+
+## الدفعة 4: تحسين الاسترجاع (`Retrieval Optimization`) وتقييم الحلول (`ص 267–272`) {#batch-4}
+
+### صفحة 267 — الدمج المتسلسل والمتوازي (`RRF`) وبداية `Retrieval Optimization`
+
+بعد ما عرفنا في نهاية ص 266 إن دمج `Term-based` و`Embedding-based` اسمه `Hybrid Search`، الصفحة دي بتشرح **الطريقتين العمليتين لدمج الخوارزميات**:
+
+#### 1) الدمج المتسلسل (`Sequential / Reranking`)
+بتشغل الأول خوارزمية رخيصة وأقل دقة (زي `Term-based`) تجيب قائمة مرشحين (`Candidates`)، وبعدين آلية أدق وأغلى (زي `k-NN` أو `Vector Search`) تفلتر وتعيد ترتيب المرشحين دول (**Reranking**).
+- **مثال 1:** في Query عن `"transformer"` ← أولاً تجيب كل المستندات اللي فيها الكلمة (سواء عن المحول الكهربائي أو الفيلم أو الـ Neural Architecture)، وبعدين بالـ Vector Search تطلع اللي يخص سؤالك فعلاً.
+- **مثال 2:** في Query `"Who's responsible for the most sales to X?"` ← أولاً تسحب كل المستندات المرتبطة بالعميل `X` باستخدام الكلمة المفتاحية `X`، وبعدين تستخدم Vector Search لاسترجاع الجزء اللي بيجاوب *"مين المسؤول عن أعلى مبيعات"*.
+
+#### 2) الدمج المتوازي (`Parallel / Ensemble`) وخوارزمية `RRF`
+بما إن كل Retriever أصلاً شغله إنه يرتب المستندات (`Ranked List`)، تقدر تشغل أكتر من Retriever **في نفس الوقت**، وبعدين تدمج قوائم الترتيب بتاعتهم في قائمة نهائية واحدة.
+- أشهر خوارزمية للدمج ده هي **Reciprocal Rank Fusion (RRF)** *(Cormack et al., 2009)*:
+  - **الفكرة البديهية:** المستند اللي ترتيبه `1` ياخد `1/1 = 1`، وترتيبه `2` ياخد `1/2 = 0.5`، ومجموع الدرجات من كل Retrievers هو التقييم النهائي (مثلاً مستند طلع الأول في Retriever والتاني في Retriever آخر ياخد `1 + 0.5 = 1.5`).
+  - **المعادلة الفعلية لـ RRF:**
+    `Score(D) = Σᵢ₌₁..ₙ [ 1 / (k + rᵢ(D)) ]`
+    - `n`: عدد قوائم الترتيب (عدد الـ Retrievers).
+    - `rᵢ(D)`: ترتيب المستند `D` في القائمة رقم `i`.
+    - `k`: ثابت بيمنع القسمة على صفر وبيتحكم في مدى تأثير المراتب المتأخرة (القيمة الشائعة هي **`k = 60`**).
+
+```mermaid
+flowchart LR
+    subgraph Seq["الدمج المتسلسل (Sequential)"]
+        Q1["Query"] --> R1["Fast Retriever (BM25)"]
+        R1 -->|"Candidates"| R2["Accurate Reranker (Vector/Cross-Encoder)"]
+        R2 --> OUT1["Final Top-k"]
+    end
+
+    subgraph Par["الدمج المتوازي (Parallel / RRF)"]
+        Q2["Query"] --> RA["Retriever A"]
+        Q2 --> RB["Retriever B"]
+        RA -->|"Rank List A"| FUS["RRF Fusion Formula"]
+        RB -->|"Rank List B"| FUS
+        FUS --> OUT2["Combined Ranking"]
+    end
+```
+
+#### 3) بداية `Retrieval Optimization`
+فيه 4 تكتيكات رئيسية بترفع احتمالية استرجاع المستندات الصح حسب طبيعة المهمة:
+1. `Chunking strategy`
+2. `Reranking`
+3. `Query rewriting`
+4. `Contextual retrieval`
+
+---
+
+### صفحة 268 — استراتيجيات التقطيع (`Chunking Strategy`)
+
+طريقة فهرسة البيانات بتعتمد على طريقة استرجاعها لاحقاً، واختيار استراتيجية **Chunking** مناسبة بيأثر بشكل كبير جداً على أداء الـ RAG:
+
+1. **التقطيع متساوي الطول (`Equal-length Chunking`):**
+   - تقسيم المستندات لوحدات متساوية حسب: الحروف (`Characters`)، الكلمات (`Words`)، الجمل (`Sentences`)، أو الفقرات (`Paragraphs`).
+   - أمثلة: `2,048 characters` أو `512 words` أو `20 sentences` لكل Chunk، أو جعل كل فقرة Chunk لوحدها.
+2. **التقطيع التكراري/الهرمي (`Recursive Splitting`):**
+   - التقسيم تدريجياً بوحدات أصغر لحد ما كل Chunk يلتزم بالحد الأقصى (`Max Chunk Size`): تبدأ بتقسيم المستند إلى أقسام (`Sections`) ← لو قسم طويل تقسمه إلى فقرات (`Paragraphs`) ← لو فقرة طويلة تقسمها إلى جمل (`Sentences`). ده بيقلل احتمال قطع النصوص المترابطة عشوائياً.
+3. **استراتيجيات مخصصة لنوع المستند (`Creative / Domain-Specific Splitters`):**
+   - فيه Splitters مخصوصة لكل لغة برمجة (علشان ما يقطعش دالة من نصها).
+   - مستندات الأسئلة والأجوبة (`Q&A`) تقدر تقسمها بحيث كل زوج (سؤال + جواب) يكون Chunk لوحده.
+   - النصوص الصينية مثلاً تحتاج طريقة تقسيم مختلفة عن النصوص الإنجليزية.
+4. **التداخل بين الأجزاء (`Overlapping`):**
+   - لو قطعت بدون Overlap، ممكن معلومة مهمة تتقسم بين 2 Chunks وتضيع!
+   - **مثال الكتاب:** جملة `"I left my wife a note"` لو اتقطعت إلى `"I left my wife"` و`"a note"` — ولا واحد فيهم بقى يوصل المعنى الحقيقي!
+   - الحل: تعمل **Overlap** على الحدود (مثلاً لو `Chunk Size = 2,048 characters`، تخلي `Overlap = 20 characters`) علشان المعلومة الحدودية تظهر كاملة في Chunk واحد على الأقل.
+
+#### قيود الحجم والتقطيع بالـ Tokens
+- **حد الحجم الأقصى:** حجم الـ Chunk مينفعش يتجاوز الـ `Maximum Context Length` بتاع الـ Generative Model؛ وفي الـ Embedding-based مينفعش كمان يتجاوز الـ `Context Limit` بتاع الـ Embedding Model.
+- **Token-based Chunking:** ممكن تقطع البيانات بعد تحويلها لـ **Tokens** باستخدام الـ **Tokenizer** الخاص بالموديل (مثلاً Tokenizer بتاع **Llama 3**). ده بيسهّل الشغل مع الـ Downstream Model، **لكن عيبه:** لو قررت تبدل الموديل لاحقاً لموديل تاني بيستخدم Tokenizer مختلف، هتضطر تعمل **Reindex** لكل بياناتك!
+
+---
+
+### صفحة 269 — تأثير حجم الـ Chunk (`Chunk Size`) وإعادة الترتيب (`Reranking`)
+
+#### 1) معضلة `Chunk Size` (أصغر ولا أكبر؟)
+مهما اخترت استراتيجية تقطيع، **حجم الـ Chunk** بيفرق في 3 نقاط:
+- **الميزة في الـ Chunks الأصغر:** تنوع أكبر في المعلومات! لما تصغّر حجم الـ Chunk للنص، تقدر تحط **ضعف عدد الـ Chunks** جوه نفس الـ Context Window، وده يدي الموديل نطاق أوسع من المعلومات ويطلع إجابة أحسن.
+- **عيوب الصغر الزائد (`Loss of Information`):** تخيل مستند بيتكلم عن موضوع `X` في نصه الأول، وبيكمل تفاصيل مهمة عنه في نصه التاني من غير ما يذكر اسم `X` تاني. لو قسمته 2 Chunks، النص التاني ممكن ما يرجعش في البحث والموديل يخسر معلومته!
+- **العبء الحسابي (`Computational Overhead`):** خصوصاً في الـ Embedding-based Retrieval؛ تقليل حجم الـ Chunk للنص معناه:
+  - **ضعف** عدد الـ Chunks اللي هتتفهرس.
+  - **ضعف** عدد الـ Embedding Vectors اللي هتتولد وتتخزن.
+  - **ضعف** مساحة البحث (`Vector Search Space`) ← وده بيقلل سرعة الـ Query!
+- **الخلاصة:** مفيش `Chunk Size` أو `Overlap Size` مثالي يناسب كل الحالات؛ لازم تجرّب وتقيس (**Experiment**) على بياناتك.
+
+#### 2) إعادة الترتيب (`Reranking`)
+الترتيب الأولي اللي بيرجعه الـ Retriever ممكن يتعمله **Rerank** تاني علشان الدقة تزيد، وده مفيد جداً لما تحتاج تقلص عدد المستندات علشان تناسب حجم الـ Context أو تقلل الـ Input Tokens:
+- **النمط الكلاسيكي:** Retriever رخيص يجيب مرشحين ← Reranker أدق وأغلى يرتبهم (`ص 266`).
+- **Time-based Reranking (الترتيب الزمني):** إعطاء وزن أعلى للبيانات الأحدث؛ أساسي في التطبيقات الحساسة للوقت زي تجميع الأخبار، الشات مع الإيميلات (`Chat with your emails`)، أو تحليل البورصة.
+- **فرق جوهري بين `Context Reranking` و `Search Reranking`:**
+  - في محركات البحث العادية، الترتيب الدقيق (النتيجة الأولى ولا الخامسة) حاسم لأن المستخدم بيبص على أول نتيجة.
+  - في الـ RAG (`Context Reranking`)، ترتيب المستندات جوه الـ Prompt برضه بيأثر لأن الموديلات بتستوعب البداية والنهاية أحسن من المنتصف (مناقشة `ص 218`)؛ **لكن** طالما المستند اتحط فعلاً جوه الـ Context، تأثير ترتيبه أقل حساسية بكتير مقارنة بمحركات البحث.
+
+---
+
+### صفحة 270 — إعادة صياغة الاستعلام (`Query Rewriting`)
+
+مصطلح **Query Rewriting** بيتسمى كمان `Query Reformulation` أو `Query Normalization` وأحياناً `Query Expansion`.
+
+#### المشكلة في المحادثات متعددة الأدوار (`Multi-turn Conversations`)
+تخيل المحادثة دي:
+- **User:** *"متى آخر مرة اشترى فيها John Doe حاجة مننا؟"*
+- **AI:** *"John اشترى قبعة Fruity Fedora مننا من أسبوعين، يوم 3 يناير 2030."*
+- **User:** *"طب وإيه أخبار Emily Doe؟"* (`"How about Emily Doe?"`)
+
+لو بعت جملة `"How about Emily Doe?"` حرفياً للـ Retriever، هترجع مستندات غلط لأنها غامضة بدون سياق المحادثة! لازم تعيد صياغة السؤال علشان يفهم لوحده: **"متى آخر مرة اشترت فيها Emily Doe حاجة مننا؟"**.
+
+- **إزاي بنعملها؟** في محركات البحث التقليدية بتتعمل بقواعد و`Heuristics`. في تطبيقات الـ AI نقدر نستخدم موديل ذكاء اصطناعي تاني بـ Prompt بسيط بيطلب منه: *"بناءً على المحادثة دي، أعد صياغة آخر رسالة للمستخدم لتعكس ما يسأل عنه فعلاً بشكل مستقل"* (زي مثال `Figure 6-4` بالكتاب).
+- **حالات معقدة (`Identity Resolution`):** لو المستخدم سأل *"طب ومراته؟"* (`"How about his wife?"`)، الموديل مش هيعرف يعيد الصياغة إلا لو استعلم الأول من الداتابيز علشان يعرف مين هي زوجة John! ولو المعلومة مش متوفرة، لازم موديل إعادة الصياغة **يعترف إن السؤال غير قابل للحل** بدل ما يـ **Hallucinate** اسم من خياله ويسبب إجابة غلط تماماً.
+
+---
+
+### صفحة 271 — الاسترجاع السياقي (`Contextual Retrieval`)
+
+الفكرة هنا: **تدعيم كل Chunk بسياق إضافي (`Augment each chunk with relevant context`)** قبل الفهرسة علشان يبقى أسهل على الـ Retriever يلاقيه.
+
+#### 3 طرق عملية لتطبيق الـ Contextual Retrieval
+1. **إضافة `Metadata` (Tags, Keywords, Entities):**
+   - في التجارة الإلكترونية (`Ecommerce`): تزويد بيانات المنتج بالوصف والتقييمات (`Reviews`)؛ والصور والفيديوهات بالعناوين والـ `Captions`.
+   - استخراج الكيانات التلقائي (**Entity Extraction**): لو المستند فيه كود خطأ دقيق زي `EADDRNOTAVAIL (99)`، إضافته في الـ Metadata بتسمح للنظام يلاقيه بالكلمة المفتاحية حتى بعد تحويل النص الأساسي لـ Embeddings!
+2. **توليد الأسئلة المرتبطة (`Question Augmentation`):**
+   - مثلاً في خدمة العملاء، مقال "إزاي تغير الباسورد" تزوده بأسئلة شائعة ممكن يسألها المستخدم: `"How to reset password?"`, `"I forgot my password"`, `"I can't log in"`, `"Help, I can't find my account"`.
+   - **ملاحظة هامشية (Footnote 9):** بعض الفرق الهندسية لقوا إن أنظمة الاسترجاع بتحقق أفضل نتائج لما البيانات تتنظم أصلاً في صيغة **سؤال وجواب (`Q&A Format`)**.
+3. **إضافة سياق المستند الأصلي (طريقة `Anthropic, 2024`):**
+   - لما تقسّم مستند كبير، كل Chunk لوحده ممكن يفتقد عنوان المستند أو موضوعه العام، فالـ Retriever ما يفهمش هو بيتكلم عن إيه.
+   - **الحل من Anthropic:** تمرير المستند الكامل (`WHOLE_DOCUMENT`) ومعاه الـ Chunk المحدد (`CHUNK_CONTENT`) لموديل AI (زي Claude)، والطلب منه يولّد **سياق مختصر جداً (`50–100 tokens`)** يشرح موقع الـ Chunk وعلاقته بالمستند الأصلي لتحسين البحث والاسترجاع فقط.
+
+---
+
+### صفحة 272 — تدفق `Anthropic Contextual Retrieval` (`Figure 6-5`) وتقييم حلول الاسترجاع
+
+#### 1) كيف تنفذ Anthropic الاسترجاع السياقي؟
+بعد ما الموديل يولّد السياق المختصر لكل Chunk، بيتم دمجه في **بداية الـ Chunk** (`Context + Chunk`)، وبعدين الـ Augmented Chunks دي بتتفهرس في مسارين معاً (**Hybrid**):
+- مسار **Embedding Model ← Vector Database**.
+- مسار **TF-IDF ← TF-IDF Index**.
+
+```mermaid
+flowchart TB
+    DOC["Original Corpus / Whole Document"] --> SPLIT["Split into Chunks (1..X)"]
+    DOC --> CTX["AI Model (e.g. Claude)<br/>Generate 50–100 token context per chunk"]
+    SPLIT --> CTX
+    CTX --> AUG["Prepend Context:<br/>Context + Chunk"]
+    AUG --> EMB["Embedding Model"] --> VDB[("Vector Database")]
+    AUG --> TF["TF-IDF"] --> TFI[("TF-IDF Index")]
+    Q(("User Query")) --> VDB
+    Q --> TFI
+```
+
+#### 2) قائمة التحقق لاختيار وتقييم حلول الاسترجاع (`Evaluating Retrieval Solutions`)
+لما تيجي تختار أداة استرجاع أو Vector Database لمشروعك، اسأل 6 أسئلة أساسية:
+1. **آليات الاسترجاع:** إيه الطرق اللي بيدعمها؟ وهل بيدعم **Hybrid Search**؟
+2. **الدعم التقني (لو VectorDB):** إيه الـ Embedding Models وVector Search Algorithms اللي بيدعمها؟
+3. **التوسع (`Scalability`):** هل بيتحمل حجم بياناتك وضغط الـ Queries وأنماط الـ Traffic عندك؟
+4. **سرعة الفهرسة (`Indexing Speed`):** بياخد قد إيه وقت علشان يفهرس بياناتك؟ وبيقدر يعالج قد إيه بيانات دفعة واحدة (`Bulk Add / Delete`)؟
+5. **زمن الاستجابة (`Query Latency`):** سرعته إيه مع كل خوارزمية استرجاع؟
+6. **نموذج التسعير (`Pricing Structure` لو Managed Solution):** بتتحاسب على حجم المستندات/المتجهات ولا على عدد الـ Queries؟
+
+> **تنبيه في نهاية الصفحة:** القائمة دي بتركز على الأساسيات التقنية، ومش شاملة متطلبات الشركات الكبرى (**Enterprise**) زي: التحكم في الصلاحيات (`Access Control`)، الامتثال (`Compliance`)، وفصل طبقة البيانات عن طبقة التحكم (`Data Plane & Control Plane Separation`).
+
+<QuickFlashcards
+  title="مراجعة سريعة — الدفعة 4 (ص 267–272)"
+  :cards="[
+    {
+      q: 'إيه الفرق بين الدمج المتسلسل (Sequential) والمتوازي (RRF) في الـ Hybrid Search؟',
+      a: 'المتسلسل بيشغل Retriever رخيص يجيب مرشحين ثم Reranker أدق يرتبهم؛ أما المتوازي فيشغل أكتر من Retriever في نفس الوقت ويدمج قوائمهم بمعادلة RRF: Σ 1/(k + rᵢ(D)).'
+    },
+    {
+      q: 'إيه العيب الخطير في الـ Token-based Chunking باستخدام Tokenizer موديل معين؟',
+      a: 'لو بدّلت الـ Generative Model لاحقاً لموديل بيستخدم Tokenizer مختلف، هتضطر تعمل Reindex لكل البيانات من جديد.'
+    },
+    {
+      q: 'ليه تقليل حجم الـ Chunk للنص ممكن يبطئ الـ Vector Search؟',
+      a: 'لأنه بيضاعف عدد الـ Chunks والـ Embedding Vectors المطلوب توليدها وتخزينها، فمساحة البحث (Vector Search Space) بتتضاعف.'
+    },
+    {
+      q: 'إزاي طريقة Anthropic بتنفذ Contextual Retrieval؟',
+      a: 'بتمرر المستند الكامل + الـ Chunk لموديل لتوليد سياق مختصر (50–100 token)، وتضيفه قبل الـ Chunk، ثم تفهرسه في كل من VectorDB وTF-IDF Index.'
+    }
+  ]"
+/>
+
+<BatchCheck id="ch06-b4" label="الدفعة 4 (ص 267–272): Retrieval Optimization (Chunking, Reranking, Query Rewriting, Contextual)" />

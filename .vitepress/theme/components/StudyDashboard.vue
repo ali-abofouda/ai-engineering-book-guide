@@ -31,15 +31,15 @@ const ch06 = computed(() => CHAPTERS_PLAN.find((c) => c.id === 'ch06'))
     <div class="aie-continue-card">
       <div class="aie-continue-info">
         <span class="aie-badge-live">متاح الآن • آخر دفعة</span>
-        <h3>كمل قراءة: Chapter 6 — الدفعة 3 (ص 262–266)</h3>
+        <h3>كمل قراءة: Chapter 6 — الدفعة 4 (ص 267–272)</h3>
         <p>
-          <code>Vector Databases</code>، خوارزميات <code>ANN</code> (<code>HNSW</code>, <code>IVF</code>, <code>LSH</code>, <code>PQ</code>, <code>Annoy</code>)،
-          مقاييس التقييم (<code>NDCG</code>, <code>Precision/Recall</code>)، و<code>Hybrid Search</code>.
+          الدمج المتسلسل والمتوازي (<code>RRF</code>)، استراتيجيات <code>Chunking</code>،
+          <code>Reranking</code>، <code>Query Rewriting</code>، و<code>Contextual Retrieval</code>.
         </p>
       </div>
       <div class="aie-continue-actions">
-        <a :href="withBase('/notes/ch06-rag-and-agents/01-rag#batch-3')" class="aie-btn-primary">
-          افتح الدفعة 3 ←
+        <a :href="withBase('/notes/ch06-rag-and-agents/01-rag#batch-4')" class="aie-btn-primary">
+          افتح الدفعة 4 ←
         </a>
         <a :href="withBase('/READING_PLAN')" class="aie-btn-secondary">
           خطة الـ 5 أسابيع
