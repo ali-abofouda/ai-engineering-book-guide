@@ -234,7 +234,7 @@ const ch06 = computed(() => CHAPTERS_PLAN.find((c) => c.id === 'ch06'))
   font-weight: 700;
   padding: 3px 11px;
   border-radius: 999px;
-  background: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-3);
   color: #fff;
 }
 
@@ -255,7 +255,7 @@ const ch06 = computed(() => CHAPTERS_PLAN.find((c) => c.id === 'ch06'))
 }
 
 .aie-btn-primary {
-  background: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-3);
   color: #fff;
 }
 

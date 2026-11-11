@@ -169,8 +169,8 @@ onUnmounted(() => {
 }
 
 .aie-focus-btn.active {
-  background: var(--vp-c-brand-1);
-  border-color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-3);
+  border-color: var(--vp-c-brand-3);
   color: #ffffff;
 }
 
@@ -181,7 +181,7 @@ onUnmounted(() => {
   z-index: 90;
   padding: 8px 14px;
   border-radius: 999px;
-  background: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-3);
   color: #ffffff;
   border: none;
   font-size: 0.84rem;

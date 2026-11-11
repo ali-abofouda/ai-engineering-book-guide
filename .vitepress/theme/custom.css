@@ -24,12 +24,28 @@
 .dark {
   --vp-c-bg: #0b1117;
   --vp-c-bg-alt: #101720;
+  --vp-c-bg-elv: #16202b;
   --vp-c-bg-soft: #141e28;
   --vp-sidebar-bg-color: #0e151d;
+  --vp-local-nav-bg-color: #0b1117;
+  --vp-nav-screen-bg-color: #0b1117;
+
+  --vp-c-border: #2c3a4a;
+  --vp-c-divider: #222e3b;
+  --vp-c-gutter: #1b2530;
+
+  --vp-c-text-1: #e6edf3;
+  --vp-c-text-2: #9fb0c3;
+  --vp-c-text-3: #6e8094;
+
+  --vp-c-default-1: #3b4958;
+  --vp-c-default-2: #2d3946;
+  --vp-c-default-3: #222c37;
+  --vp-c-default-soft: rgba(148, 163, 184, 0.14);
 
   --vp-c-brand-1: #2dd4bf;
   --vp-c-brand-2: #14b8a6;
-  --vp-c-brand-3: #0d9488;
+  --vp-c-brand-3: #0f766e;
   --vp-c-brand-soft: rgba(45, 212, 191, 0.14);
 
   --vp-home-hero-name-background: linear-gradient(125deg, #2dd4bf 20%, #38bdf8 90%);
@@ -144,6 +160,13 @@
 
 .VPNavBar .menu + .appearance::before {
   margin: 0 8px !important;
+}
+
+@media (min-width: 768px) {
+  .VPNavBarAppearance {
+    display: flex !important;
+    align-items: center !important;
+  }
 }
 
 /* =========================================================
@@ -382,11 +405,8 @@ mjx-container {
 }
 
 .dark .vp-doc .mermaid {
-  background: #131b23;
-}
-
-.dark .vp-doc .mermaid svg {
-  filter: invert(0.9) hue-rotate(180deg);
+  background: #0f1720;
+  border-color: #222e3b;
 }
 
 .vp-doc .mermaid:hover {

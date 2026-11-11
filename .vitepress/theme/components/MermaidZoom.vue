@@ -109,9 +109,9 @@ onUnmounted(() => {
 }
 
 .aie-zoom-close {
-  background: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-3);
   color: #fff;
-  border-color: var(--vp-c-brand-1);
+  border-color: var(--vp-c-brand-3);
 }
 
 .aie-zoom-close:hover {
@@ -141,10 +141,7 @@ onUnmounted(() => {
 }
 
 :global(.dark) .aie-zoom-canvas {
-  background: #131b23;
-}
-
-:global(.dark) .aie-zoom-canvas svg {
-  filter: invert(0.9) hue-rotate(180deg);
+  background: #0f1720;
+  border-color: #222e3b;
 }
 </style>
