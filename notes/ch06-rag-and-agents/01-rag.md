@@ -175,3 +175,169 @@ flowchart TB
 />
 
 <BatchCheck id="ch06-b1" label="الدفعة 1 (ص 253–257): مقدمة الفصل وRAG Architecture" />
+
+---
+
+## الدفعة 2: خوارزميات الاسترجاع — Term-Based مقابل Embedding-Based (`ص 258–261`) {#batch-2}
+
+### صفحة 258 — تصنيف Sparse vs Dense ولماذا اختار الكتاب تصنيفاً أدق؟ + بداية Term-Based Retrieval
+
+#### 1) صندوق مهم: `Sparse Versus Dense Retrieval`
+في الأبحاث والمقالات، غالباً هتشوف خوارزميات الاسترجاع بتتقسم إلى: **Sparse** مقابل **Dense**. لكن الكاتبة في الكتاب ده فضّلت تقسيم مختلف وأدق: **`Term-based` مقابل `Embedding-based`**. ليه؟
+
+- **Sparse Retrievers (المتجهات المتناثرة):**
+  - بتمثّل البيانات بـ **Sparse Vectors** — يعني متجه أغلب قيمه أصفار (`0`).
+  - الـ **Term-Based Retrieval** بيُعتبر Sparse لأن كل كلمة ممكن تتمثل بـ **Sparse One-Hot Vector**: متجه كله أصفار ما عدا خانة واحدة فيها `1`، وطول المتجه يساوي عدد كلمات القاموس (`Vocabulary`)، ومكان الـ `1` هو ترتيب الكلمة في القاموس.
+  - **مثال:** لو القاموس فيه 3 كلمات بس `{"food": 0, "banana": 1, "slug": 2}`، هتكون متجهات الـ One-Hot هي:
+    - `"food"` ← `[1, 0, 0]`
+    - `"banana"` ← `[0, 1, 0]`
+    - `"slug"` ← `[0, 0, 1]`
+
+- **Dense Retrievers (المتجهات الكثيفة):**
+  - بتمثّل البيانات بـ **Dense Vectors** — يعني متجه أغلب قيمه مش أصفار (`non-zero`).
+  - الـ **Embedding-Based Retrieval** غالباً بيُعتبر Dense لأن الـ Embeddings في العادة Dense Vectors.
+  - **لكن فيه استثناء مهم جداً: Sparse Embeddings!**
+    - مثال عليه خوارزمية **SPLADE (Sparse Lexical and Expansion)** (Formal et al., 2021): دي بتستخدم Embeddings متولدة من موديل **BERT**، لكنها بتستخدم **Regularization** يزق معظم قيم المتجه ناحية الصفر علشان العمليات الحسابية تكون أسرع وأكفأ.
+  - **ليه تصنيف `Sparse vs Dense` بيعمل لخبطة؟**
+    - لو قسمت الدنيا `Sparse vs Dense`، هتلاقي **SPLADE** اتحط بالغلط في نفس خانة الـ Term-based، مع إن طريقة شغله ونقط قوته وضعفه شبه الـ **Dense Embedding Retrieval** بكتير! لذلك تقسيم **`Term-based vs Embedding-based`** بيمنع الخلط ده.
+
+```mermaid
+flowchart LR
+    CAT["تصنيف خوارزميات الاسترجاع"] --> TB["Term-Based (Lexical)<br/>TF-IDF, BM25<br/>Always Sparse"]
+    CAT --> EB["Embedding-Based (Semantic)"]
+    EB --> DE["Dense Embeddings<br/>(Standard Vector Search)"]
+    EB --> SE["Sparse Embeddings<br/>مثل SPLADE (BERT + Regularization)"]
+```
+
+#### 2) بداية `Term-Based Retrieval` (الاسترجاع المبني على الكلمات / `Lexical Retrieval`)
+أبسط طريقة علشان تلاقي مستندات مناسبة لـ Query هي إنك تدور على الكلمات المفتاحية (**Keywords**). مثلاً لو الـ Query هو `"AI engineering"`، النظام هيجيب كل المستندات اللي فيها عبارة `"AI engineering"`.
+بس الطريقة البسيطة دي فيها **مشكلتين أساسيتين**:
+1. **مشكلة العدد وحدود الـ Context:** ممكن مستندات كتير جداً تحتوي الكلمة، والـ Context Window متكفيش تحطهم كلهم.
+   - الحل التقديري (**Heuristic**): اختار المستندات اللي الكلمة اتكررت فيها أكتر عدد من المرات، على افتراض إن تكرار الكلمة يعني صلة أقوى. عدد مرات ظهور الكلمة في المستند اسمه **Term Frequency (TF)**.
+2. **مش كل الكلمات ليها نفس الأهمية:** الـ Prompt ممكن يكون طويل وفيه كلمات مهمة وكلمات حشو.
+   - **مثال الكتاب:** الـ Query `"Easy-to-follow recipes for Vietnamese food to cook at home"` فيه 9 كلمات (`easy-to-follow`, `recipes`, `for`, `vietnamese`, `food`, `to`, `cook`, `at`, `home`). الطبيعي إنك عايز تركز على كلمات غنية بالمعنى زي `vietnamese` و`recipes` مش كلمات زي `for` و`at`! إذن محتاجين طريقة تميز الكلمات المهمة.
+
+---
+
+### صفحة 259 — مقياس `IDF`، معادلة `TF-IDF`، الـ `Inverted Index`، وبداية `BM25`
+
+#### 1) فكرة `IDF (Inverse Document Frequency)`
+البديهة بتقول: كل ما الكلمة تظهر في مستندات أكتر، كل ما قيمتها التمييزية تقل (**Less Informative**). كلمات زي `"for"` و`"at"` غالباً موجودة في معظم المستندات، فملهاش وزن تمييزي.
+إذن أهمية الكلمة تتناسب **عكسياً** مع عدد المستندات اللي ظهرت فيها، وده مقياس **IDF**:
+- تعدّ المستندات اللي فيها الكلمة، وتقسم إجمالي عدد المستندات على العدد ده.
+- **مثال:** لو عندنا `10` مستندات، وفيه `5` منهم فيهم الكلمة، تبقى النسبة `10 / 5 = 2`. كل ما الـ IDF يكبر، الكلمة تكون أندر وأهم.
+
+#### 2) خوارزمية `TF-IDF` ومعادلتها الرياضية
+خوارزمية **TF-IDF** بتدمج المقياسين مع بعض (`TF × IDF`). لو عندنا Query فيه الكلمات $t_1, t_2, \dots, t_q$ ومستند $D$:
+- تكرار الكلمة $t$ في المستند $D$ نرمز له بـ `f(t, D)`.
+- إجمالي عدد المستندات `N`، وعدد المستندات التي تحتوي الكلمة `t` هو `C(t)`.
+- قيمة الـ IDF تُحسب باللوغاريتم:
+  `IDF(t) = log( N / C(t) )`
+- وتقدير صلة المستند `D` بالـ Query `Q` (بشكل مبسط) هو مجموع حاصل ضرب الـ IDF في الـ TF لكل كلمات الـ Query:
+  `Score(D, Q) = Σ [ IDF(tᵢ) × f(tᵢ, D) ]` (لكل `i` من `1` إلى `q`)
+
+#### 3) الحلول الشائعة والـ `Inverted Index` (مثل `Table 6-1`)
+من أشهر أدوات الـ Term-based Retrieval: **Elasticsearch** و**BM25**.
+- **Elasticsearch** (Shay Banon, 2010) مبني فوق **Lucene**، وبيستخدم هيكل بيانات اسمه **Inverted Index (الفهرس المعكوس)**.
+- الفكرة: بدل ما تدخل جوه كل مستند تدور على الكلمات، بتعمل قاموس (`Dictionary`) يربط كل كلمة (`Term`) بقائمة المستندات اللي بتحتويها، ومعاها بيانات إضافية زي `Document Count` و`Term Frequency` علشان حساب `TF-IDF` يتم في لحظة.
+
+**جدول توضيحي لفكرة الـ Inverted Index (مكافئ لـ Table 6-1):**
+
+| الكلمة (`Term`) | عدد المستندات (`Document count`) | قائمة `(رقم المستند, التكرار TF)` |
+| :--- | :--- | :--- |
+| `banana` | `2` | `(10, 3), (5, 2)` |
+| `machine` | `4` | `(1, 5), (10, 1), (38, 9), (42, 5)` |
+| `learning` | `3` | `(1, 5), (38, 7), (42, 5)` |
+
+#### 4) بداية `Okapi BM25`
+**Okapi BM25** (الجيل الـ 25 من خوارزمية *Best Matching*، طورها Robertson وآخرون في التمانينات) هي تطوير مباشر لـ `TF-IDF`.
+الفرق الجوهري الأول: مقارنة بـ `TF-IDF` الساذجة، **BM25** بتعمل **Normalize** لقيم تكرار الكلمات (`Term Frequency`) بناءً على **طول المستند (`Document Length`)**...
+
+---
+
+### صفحة 260 — تكملة `BM25`، الـ `Tokenization`، والانتقال إلى `Embedding-Based Retrieval`
+
+#### 1) لماذا التطبيع بطول المستند في `BM25`؟ ومكانتها في الصناعة
+المستندات الأطول طبيعي احتمال وجود الكلمة فيها وتكرارها يكون أعلى من المستندات القصيرة، مش لأنها أدق، لكن لمجرد إنها أطول؛ وده اللي بتعالجه **BM25** بذكاء.
+- **معلومة هامشية (Footnote 6):** للّي حابب يتعمق في رياضيات BM25، الكاتبة بترشح ورقة مؤلفيها: *"The Probabilistic Relevance Framework: BM25 and Beyond"* (Robertson and Zaragoza, 2009).
+- نسخ BM25 المطورة زي **`BM25+`** و**`BM25F`** لسه مستخدمة على نطاق واسع في الإنتاج، وبتعتبر **Baseline** قوي جداً لما تقارن بيه أي خوارزمية أحدث زي الـ Embedding-based Retrieval.
+- **معلومة هامشية (Footnote 7):** حتى **Aravind Srinivas** (الرئيس التنفيذي لـ Perplexity) غرّد قبل كده وقال: *"تحقيق تحسن حقيقي يتفوق على BM25 أو الـ full-text search أمر صعب."*
+
+#### 2) عملية الـ `Tokenization` والتنظيف (`Preprocessing`)
+عملية تقطيع الـ Query لكلمات/مصطلحات منفصلة اسمها **Tokenization**.
+- **فخ التقطيع كلمة بكلمة:** لو قطعت كل كلمة لوحدها، المصطلحات المركبة بتتكسر وتفقد معناها؛ مثلاً `"hot dog"` لو اتقطعت لـ `"hot"` و`"dog"` كل كلمة لوحدها مبقتش تعبر عن الأكلة!
+- **الحل:** التعامل مع الـ **n-grams** الشائعة كـ Term واحد (مثلاً لو الـ Bigram `"hot dog"` شائع، يتفهرس كوحدة واحدة).
+- خطوات إضافية شائعة (غالباً أدوات الـ Term-based بتعملها أوتوماتيك):
+  1. تحويل الحروف لـ `Lowercase`.
+  2. حذف علامات الترقيم (`Punctuation`).
+  3. حذف الكلمات الشائعة غير المؤثرة (**Stop Words**) زي `"the"`, `"and"`, `"is"`.
+  - مكتبات NLP الكلاسيكية زي **NLTK** و**spaCy** و**Stanford CoreNLP** بتوفر أدوات جاهزة للـ Tokenization ده.
+
+#### 3) سؤال: هل ينفع الاسترجاع بـ `n-gram overlap`؟ (ربط مع Ch. 4)
+Chapter 4 بيناقش قياس التشابه اللفظي بين نصين عن طريق تداخل الـ `n-grams`. ينفع نستخدمه في الاسترجاع، **لكن بشرط:**
+- يشتغل كويس لما يكون **طول الـ Query قريب من طول المستند**.
+- لو المستندات أطول بكتير من الـ Query، احتمال إنها تحتوي n-grams من الـ Query هيرتفع جداً، فتلاقي مستندات كتير واخدة Scores عالية متقاربة، وتفقد القدرة على التمييز بين المستند المهم فعلاً والمستند الأقل صلة!
+
+#### 4) بداية `Embedding-Based Retrieval` (`Semantic Retrieval`)
+مشكلة الـ Term-based Retrieval الجوهرية إنه بيحسب الصلة على **المستوى اللفظي (`Lexical Level`)** مش على **مستوى المعنى (`Semantic Level`)** (وزي ما اتشرح في Ch. 3، شكل النص لوحده ما بيعكسش دايماً معناه).
+- **مثال صارخ:** لو بحثت عن `"transformer architecture"` في نظام لفظي، ممكن يرجعلك مقالات عن المحولات الكهربائية (`Electric Device`) أو سلسلة أفلام *Transformers*!
+- على العكس، الـ **Embedding-Based Retrievers** (أو **Semantic Retrieval**) بترتب المستندات حسب **مدى تقارب المعنى** مع الـ Query.
+
+---
+
+### صفحة 261 — كيف يشتغل الـ `Embedding-Based Retriever` عملياً؟ (`Figure 6-3`)
+
+في الـ **Embedding-Based Retrieval**، مرحلة الفهرسة (**Indexing**) بتاخد وظيفة إضافية: بعد تقسيم المستندات لـ Chunks (`Splitter`)، بنحوّل كل Chunk لـ **Embedding** ونخزن المتجهات الناتجة في **Vector Database (`VectorDB`)**.
+
+أما وقت التشغيل (**Querying**)، فالعملية بتمشي في خطوتين أساسيتين للـ Retrieval، وبعدهم خطوة التوليد (كما في مخطط `Figure 6-3` بالكتاب):
+1. **Embedding Model:** تحويل الـ Query بتاع المستخدم إلى Embedding **باستخدام نفس الـ Embedding Model** اللي استخدمناه وقت الـ Indexing (نقطة حاسمة علشان المتجهات تكون في نفس الفضاء الدلالي).
+2. **Retriever:** يسحب أقرب **`k` data chunks** متجهاتها قريبة من الـ Query Embedding في الـ VectorDB. *(عدد الـ `k` اللي هتسحبه بيعتمد على طبيعة التطبيق، الـ Generative Model، والـ Query نفسه).*
+3. **Generative Model:** يستقبل الـ Query مع الـ `k` chunks المسترجعة كـ Context ويولّد الإجابة النهائية.
+
+```mermaid
+flowchart TB
+    subgraph Indexing["1. Indexing (Offline / Prep)"]
+        EM[("External Memory<br/>Docs, tables, chat history")] --> SP["Splitter (Chunking)"]
+        SP --> EMB1["Embedding Model"]
+        EMB1 --> VDB[("VectorDB<br/>External Data Embeddings")]
+    end
+
+    subgraph Querying["2. Querying & Generation (Runtime)"]
+        U(("User")) -->|"Query"| EMB2["Embedding Model<br/>(Same Model)"]
+        U -->|"Query"| GEN["Generative Model"]
+        EMB2 -->|"Query Embedding"| RET["Retriever (Top-k)"]
+        VDB --> RET
+        RET -->|"Relevant Context (k chunks)"| GEN
+        GEN -->|"Response"| U
+    end
+```
+
+> **ملاحظة إنتاجية ومقارنة بالـ Recommender Systems (Footnote 8):**
+> التدفق اللي فوق ده مبسط؛ في أنظمة الإنتاج الحقيقية، الـ Semantic Retrieval غالباً بيزود مكونات تانية زي **Reranker** لإعادة ترتيب النتائج المرشحة بدقة أعلى، و**Caches** لتقليل الـ **Latency**. والكاتبة بتلفت الانتباه في الهامش إن خطوات الاسترجاع في الـ RAG شبه جداً خطوات أنظمة التوصية التقليدية (**Traditional Recommender Systems**).
+
+#### تذكير حاسم عن الـ Embeddings (من Ch. 3)
+الـ **Embedding** هو متجه رقمي بيهدف للحفاظ على الخصائص والمعاني المهمة للبيانات الأصلية. والقاعدة الذهبية هنا: **لو الـ Embedding Model ضعيف أو مش مناسب لمجالك، الـ Embedding-Based Retriever كله مش هيشتغل كويس** مهما حسّنت باقي المكونات.
+
+<QuickFlashcards
+  title="مراجعة سريعة — الدفعة 2 (ص 258–261)"
+  :cards="[
+    {
+      q: 'ليه الكتاب اختار تصنيف Term-based vs Embedding-based بدل Sparse vs Dense؟',
+      a: 'لأن فيه طرق زي SPLADE بتستخدم Sparse Embeddings (من BERT مع Regularization)، فالتصنيف القديم بيحطها بالغلط مع الـ Term-based رغم إن سلوكها وقوتها شبه الـ Embedding-based.'
+    },
+    {
+      q: 'إيه الفرق الأساسي بين BM25 و TF-IDF الساذجة؟',
+      a: 'BM25 بتعمل Normalize لقيم تكرار الكلمات (TF) بناءً على طول المستند، علشان المستندات الطويلة ما تاخدش Score أعلى لمجرد طولها.'
+    },
+    {
+      q: 'إيه مشكلة تقطيع النص كلمة بكلمة في الـ Tokenization وإزاي بنعالجها؟',
+      a: 'المصطلحات المركبة زي hot dog بتتفكك لكلمات تفقد معناها الأصلي؛ والحل هو معاملة الـ n-grams الشائعة كـ Term واحد مع إزالة Stop words وعلامات الترقيم وتوحيد حالة الحروف.'
+    },
+    {
+      q: 'إيه الشرط الأساسي وقت تحويل الـ Query لـ Embedding في الـ Semantic Retrieval؟',
+      a: 'لازم تستخدم نفس الـ Embedding Model اللي اتعمل بيه الـ Indexing علشان الـ Query والـ Chunks يكونوا في نفس الـ Vector Space.'
+    }
+  ]"
+/>
+
+<BatchCheck id="ch06-b2" label="الدفعة 2 (ص 258–261): Term-Based (TF-IDF, BM25) vs Embedding Retrieval" />

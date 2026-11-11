@@ -30,16 +30,16 @@ const ch06 = computed(() => CHAPTERS_PLAN.find((c) => c.id === 'ch06'))
     <!-- Continue Reading Banner -->
     <div class="aie-continue-card">
       <div class="aie-continue-info">
-        <span class="aie-badge-live">متاح الآن • نقطة البداية</span>
-        <h3>كمل قراءة: Chapter 6 — RAG and Agents</h3>
+        <span class="aie-badge-live">متاح الآن • آخر دفعة</span>
+        <h3>كمل قراءة: Chapter 6 — الدفعة 2 (ص 258–261)</h3>
         <p>
-          الدفعة 1 (<strong>ص 253–257</strong>): مقدمة الفصل، الجذور البحثية لـ <code>RAG</code>،
-          <code>RAG Architecture</code>، ومدخل خوارزميات الاسترجاع.
+          تصنيف <code>Sparse vs Dense</code>، خوارزميات <code>TF-IDF</code> و<code>BM25</code>،
+          <code>Inverted Index</code>، وبداية <code>Embedding-Based Retrieval</code>.
         </p>
       </div>
       <div class="aie-continue-actions">
-        <a :href="withBase('/notes/ch06-rag-and-agents/01-rag')" class="aie-btn-primary">
-          افتح الدفعة 1 ←
+        <a :href="withBase('/notes/ch06-rag-and-agents/01-rag#batch-2')" class="aie-btn-primary">
+          افتح الدفعة 2 ←
         </a>
         <a :href="withBase('/READING_PLAN')" class="aie-btn-secondary">
           خطة الـ 5 أسابيع

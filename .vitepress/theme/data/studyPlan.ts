@@ -47,7 +47,8 @@ export const CHAPTERS_PLAN: ChapterItem[] = [
         title: 'الدفعة 2: Term-Based (TF-IDF, BM25) vs Embedding Retrieval',
         pagesRange: '257–261',
         pageCount: 5,
-        available: false,
+        link: '/notes/ch06-rag-and-agents/01-rag#batch-2',
+        available: true,
       },
       {
         id: 'ch06-b3',
