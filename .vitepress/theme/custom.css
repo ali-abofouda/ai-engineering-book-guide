@@ -2,11 +2,14 @@
   --vp-font-family-base: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
   --vp-font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --aie-doc-font-scale: 1;
+  --vp-sidebar-width: 252px;
+  --vp-nav-height: 60px;
 
   /* Reading-first warm paper Light Mode + Teal/Cyan accent */
   --vp-c-bg: #fcfbf7;
   --vp-c-bg-alt: #f5f2ea;
   --vp-c-bg-soft: #f2eee4;
+  --vp-sidebar-bg-color: #f7f4ec;
 
   --vp-c-brand-1: #0f766e;
   --vp-c-brand-2: #0d9488;
@@ -22,6 +25,7 @@
   --vp-c-bg: #0b1117;
   --vp-c-bg-alt: #101720;
   --vp-c-bg-soft: #141e28;
+  --vp-sidebar-bg-color: #0e151d;
 
   --vp-c-brand-1: #2dd4bf;
   --vp-c-brand-2: #14b8a6;
@@ -31,12 +35,232 @@
   --vp-home-hero-name-background: linear-gradient(125deg, #2dd4bf 20%, #38bdf8 90%);
 }
 
-/* Frosted glass navbar */
+/* =========================================================
+   Unified, Sleek RTL Navbar
+   ========================================================= */
 .VPNavBar {
-  backdrop-filter: blur(12px);
+  background-color: rgba(252, 251, 247, 0.88) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--vp-c-divider);
 }
 
-/* Subtle Hero polish + Feature card hover lift */
+.dark .VPNavBar {
+  background-color: rgba(11, 17, 23, 0.88) !important;
+}
+
+.VPNavBar .wrapper {
+  padding: 0 20px !important;
+}
+
+.VPNavBar .container {
+  max-width: 1320px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px;
+}
+
+.VPNavBar.has-sidebar .title {
+  position: static !important;
+  width: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.VPNavBarTitle .title {
+  border-bottom-color: transparent !important;
+  font-weight: 700 !important;
+  font-size: 1.02rem !important;
+  gap: 10px;
+}
+
+.VPNavBarTitle .logo {
+  margin: 0 !important;
+  height: 28px !important;
+  width: 28px !important;
+}
+
+.VPNavBar.has-sidebar .content {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.VPNavBar .content-body {
+  background: transparent !important;
+  justify-content: flex-end !important;
+  gap: 6px;
+}
+
+.VPNavBar .divider {
+  display: none !important;
+}
+
+.VPNavBarSearch {
+  padding-left: 0 !important;
+  padding-right: 12px !important;
+  margin-inline-end: auto;
+}
+
+@media (min-width: 768px) {
+  .DocSearch-Button {
+    border-radius: 10px !important;
+    border: 1px solid var(--vp-c-divider) !important;
+    background-color: var(--vp-c-bg-soft) !important;
+    padding: 0 12px !important;
+    height: 36px !important;
+  }
+
+  .DocSearch-Button:hover {
+    border-color: var(--vp-c-brand-1) !important;
+  }
+}
+
+.VPNavBarMenu {
+  gap: 4px;
+  align-items: center;
+}
+
+.VPNavBarMenuLink {
+  padding: 0 12px !important;
+  height: 34px !important;
+  line-height: 34px !important;
+  border-radius: 8px !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  transition: background-color 0.15s, color 0.15s !important;
+}
+
+.VPNavBarMenuLink:hover {
+  background-color: var(--vp-c-brand-soft) !important;
+  color: var(--vp-c-brand-1) !important;
+}
+
+.VPNavBarMenuLink.active {
+  background-color: var(--vp-c-brand-soft) !important;
+  color: var(--vp-c-brand-1) !important;
+}
+
+.VPNavBar .menu + .appearance::before {
+  margin: 0 8px !important;
+}
+
+/* =========================================================
+   Compact Native RTL Sidebar (Right Side, Fixed 252px)
+   ========================================================= */
+.VPSidebar {
+  left: auto !important;
+  right: 0 !important;
+  width: min(280px, calc(100vw - 48px)) !important;
+  max-width: 280px !important;
+  transform: translateX(100%) !important;
+  border-left: 1px solid var(--vp-c-divider);
+}
+
+.VPSidebar.open {
+  transform: translateX(0) !important;
+}
+
+@media (min-width: 960px) {
+  .VPSidebar {
+    width: var(--vp-sidebar-width) !important;
+    max-width: var(--vp-sidebar-width) !important;
+    padding: calc(var(--vp-nav-height) + 18px) 16px 64px 14px !important;
+    transform: translateX(0) !important;
+  }
+
+  .VPSidebar .curtain {
+    display: none !important;
+  }
+
+  .VPContent.has-sidebar {
+    padding-left: 0 !important;
+    padding-right: var(--vp-sidebar-width) !important;
+  }
+
+  .VPLocalNav.has-sidebar {
+    padding-left: 0 !important;
+    padding-right: var(--vp-sidebar-width) !important;
+  }
+}
+
+.VPLocalNav .menu-icon {
+  margin-right: 0 !important;
+  margin-left: 8px !important;
+}
+
+.VPSidebarItem .indicator {
+  left: auto !important;
+  right: -10px !important;
+}
+
+.VPSidebarItem.level-1 > .item > .link,
+.VPSidebarItem.level-2 > .item > .link {
+  border-radius: 8px;
+  padding: 2px 10px;
+  transition: background-color 0.15s;
+}
+
+.VPSidebarItem.is-active > .item > .link {
+  background-color: var(--vp-c-brand-soft);
+}
+
+.VPSidebarItem.level-0 {
+  padding-bottom: 16px !important;
+}
+
+/* =========================================================
+   Doc Content & Outline Aside in RTL
+   ========================================================= */
+@media (min-width: 960px) {
+  .VPDoc {
+    padding: 36px 24px 80px !important;
+  }
+
+  .VPDoc .content {
+    padding: 0 20px 96px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .VPDoc .aside {
+    padding-left: 0 !important;
+    padding-right: 24px !important;
+    max-width: 236px !important;
+  }
+
+  .VPDoc .aside-container {
+    width: 210px !important;
+  }
+
+  .VPDoc.has-aside .content-container {
+    max-width: 760px !important;
+  }
+}
+
+/* Focus / Zen Reading Mode */
+html.aie-focus-mode .VPSidebar,
+html.aie-focus-mode .VPDocAside {
+  display: none !important;
+}
+
+html.aie-focus-mode .VPDoc .content-container {
+  max-width: 820px !important;
+  margin: 0 auto !important;
+}
+
+@media (min-width: 960px) {
+  html.aie-focus-mode .VPContent.has-sidebar,
+  html.aie-focus-mode .VPLocalNav.has-sidebar {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
+}
+
+/* =========================================================
+   Hero Polish & Feature Cards
+   ========================================================= */
 .VPHero {
   position: relative;
 }
@@ -66,7 +290,9 @@
   box-shadow: 0 10px 26px rgba(15, 118, 110, 0.08);
 }
 
-/* Comfortable long-form Arabic reading rhythm with dynamic font scale */
+/* =========================================================
+   Reading Typography, Semantic Callouts, Tables, Mermaid
+   ========================================================= */
 .vp-doc p,
 .vp-doc li {
   line-height: 1.9;
@@ -79,7 +305,6 @@
   border-bottom: 1px solid var(--vp-c-divider);
 }
 
-/* Highlight page-by-page headings (e.g. صفحة 253 — ...) */
 .vp-doc h3 {
   margin-top: 2.1rem;
   padding: 10px 16px;
@@ -88,7 +313,6 @@
   border-right: 4px solid var(--vp-c-brand-1);
 }
 
-/* Fix RTL blockquote border to appear on the right instead of left */
 .vp-doc blockquote {
   border-left: none;
   border-right: 4px solid var(--vp-c-brand-1);
@@ -98,7 +322,6 @@
   color: var(--vp-c-text-1);
 }
 
-/* Semantic custom containers in RTL */
 .vp-doc .custom-block {
   border-radius: 12px;
   padding: 14px 18px;
@@ -124,7 +347,6 @@
   background: rgba(245, 158, 11, 0.09);
 }
 
-/* BiDi isolation for English inline terms and math inside Arabic sentences */
 .vp-doc :not(pre) > code {
   direction: ltr;
   unicode-bidi: isolate;
@@ -140,7 +362,6 @@ mjx-container {
   unicode-bidi: isolate;
 }
 
-/* Keep code blocks and Mermaid diagrams strictly LTR */
 .vp-doc pre,
 .vp-doc pre code,
 .vp-doc .language-mermaid,
@@ -149,7 +370,6 @@ mjx-container {
   text-align: left;
 }
 
-/* Interactive Mermaid card with Dark Mode fix and click-to-zoom cue */
 .vp-doc .mermaid {
   position: relative;
   margin: 18px 0;
@@ -190,7 +410,6 @@ mjx-container {
   pointer-events: none;
 }
 
-/* Better readability and hover highlight for tables */
 .vp-doc table {
   display: table;
   width: 100%;
@@ -205,22 +424,4 @@ mjx-container {
 
 .vp-doc tbody tr:hover {
   background: var(--vp-c-brand-soft);
-}
-
-/* Focus / Zen Reading Mode */
-html.aie-focus-mode .VPSidebar,
-html.aie-focus-mode .VPDocAside {
-  display: none !important;
-}
-
-html.aie-focus-mode .VPDoc .content-container {
-  max-width: 820px !important;
-  margin: 0 auto !important;
-}
-
-@media (min-width: 960px) {
-  html.aie-focus-mode .VPContent.has-sidebar {
-    padding-right: 0 !important;
-    padding-left: 0 !important;
-  }
 }
