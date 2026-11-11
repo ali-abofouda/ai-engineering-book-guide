@@ -55,7 +55,8 @@ export const CHAPTERS_PLAN: ChapterItem[] = [
         title: 'الدفعة 3: Vector DBs وANN والمقارنة ومقاييس الترتيب',
         pagesRange: '262–266',
         pageCount: 5,
-        available: false,
+        link: '/notes/ch06-rag-and-agents/01-rag#batch-3',
+        available: true,
       },
       {
         id: 'ch06-b4',
