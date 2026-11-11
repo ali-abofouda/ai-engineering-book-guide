@@ -1,14 +1,111 @@
 :root {
-  --vp-font-family-base: 'Cairo', 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+  --vp-font-family-base: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --vp-font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Reading-first warm paper Light Mode + Teal accent */
+  --vp-c-bg: #fcfbf7;
+  --vp-c-bg-alt: #f5f2ea;
+  --vp-c-bg-soft: #f3efe6;
+
+  --vp-c-brand-1: #0f766e;
+  --vp-c-brand-2: #0d9488;
+  --vp-c-brand-3: #115e59;
+  --vp-c-brand-soft: rgba(15, 118, 110, 0.12);
 }
 
-/* Keep code blocks, inline code, and Mermaid diagrams strictly LTR */
+.dark {
+  --vp-c-bg: #0f1419;
+  --vp-c-bg-alt: #131a21;
+  --vp-c-bg-soft: #172029;
+
+  --vp-c-brand-1: #2dd4bf;
+  --vp-c-brand-2: #14b8a6;
+  --vp-c-brand-3: #0d9488;
+  --vp-c-brand-soft: rgba(45, 212, 191, 0.14);
+}
+
+/* Comfortable long-form Arabic reading rhythm */
+.vp-doc p,
+.vp-doc li {
+  line-height: 1.9;
+  font-size: 1.03rem;
+}
+
+.vp-doc h2 {
+  margin-top: 2.2rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+/* Highlight page-by-page headings (e.g. صفحة 253 — ...) */
+.vp-doc h3 {
+  margin-top: 2rem;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  border-right: 4px solid var(--vp-c-brand-1);
+}
+
+/* Fix RTL blockquote border to appear on the right instead of left */
+.vp-doc blockquote {
+  border-left: none;
+  border-right: 4px solid var(--vp-c-brand-1);
+  background: var(--vp-c-bg-soft);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--vp-c-text-1);
+}
+
+/* BiDi isolation for English inline terms inside Arabic sentences */
+.vp-doc :not(pre) > code {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+  padding: 0.08em 0.42em;
+  border-radius: 6px;
+  font-size: 0.87em;
+  font-weight: 500;
+}
+
+/* Keep code blocks and Mermaid diagrams strictly LTR */
 .vp-doc pre,
-.vp-doc code,
+.vp-doc pre code,
 .vp-doc .language-mermaid,
 .mermaid {
   direction: ltr;
   text-align: left;
+}
+
+/* Interactive Mermaid card with click-to-zoom cue */
+.vp-doc .mermaid {
+  position: relative;
+  margin: 18px 0;
+  padding: 16px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid var(--vp-c-divider);
+  cursor: zoom-in;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.vp-doc .mermaid:hover {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.vp-doc .mermaid::after {
+  content: 'اضغط للتكبير';
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-family: var(--vp-font-family-base);
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.12);
+  color: #0f766e;
+  direction: rtl;
+  pointer-events: none;
 }
 
 /* Better readability for mixed Arabic + English tables */

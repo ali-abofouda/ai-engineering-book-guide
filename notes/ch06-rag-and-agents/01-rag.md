@@ -151,3 +151,27 @@ flowchart TB
 وهنا الفصل بيبدأ بالنوعين الأشهر:
 1. **Term-Based Retrieval** (الاسترجاع المبني على الكلمات/المصطلحات) — يبدأ شرحه في صفحة 258.
 2. **Embedding-Based Retrieval** (الاسترجاع المبني على المتجهات الدلالية) — يبدأ شرحه بعدها.
+
+<QuickFlashcards
+  title="مراجعة سريعة — الدفعة 1 (ص 253–257)"
+  :cards="[
+    {
+      q: 'إيه الفرق الجوهري بين Instructions و Context في أي تطبيق AI؟',
+      a: 'الـ Instructions بتكون عامة ومشتركة لكل الـ Queries، بينما الـ Context مخصص ومختلف لكل Query لوحده (query-specific)، وبناء الـ Context للـ Foundation Models يعادل Feature Engineering في الـ Classical ML.'
+    },
+    {
+      q: 'ليه المؤلفة شايفة إن زيادة الـ Context Length مش هتقضي على الـ RAG؟',
+      a: 'لسببين: (1) البيانات دايماً بتكبر أسرع من أي Context Window (قانون باركنسون للـ Context)، (2) طول السياق بيخلي الموديل يتشتت أحياناً، وكل Token زيادة بيزود الـ Cost والـ Latency.'
+    },
+    {
+      q: 'إيه هي وظيفتا الـ Retriever الأساسية في معمارية الـ RAG؟',
+      a: '(1) Indexing: تجهيز وتنظيم البيانات لسرعة الاسترجاع لاحقاً، (2) Querying: إرسال الـ Query وقت التشغيل لاسترجاع البيانات المرتبطة بيه.'
+    },
+    {
+      q: 'إمتى Anthropic اقترحت الاستغناء عن الـ RAG في نماذج Claude؟',
+      a: 'لو الـ Knowledge Base أصغر من 200,000 tokens (حوالي 500 صفحة) — وقتها تقدر تحطها كلها مباشرة في الـ Prompt.'
+    }
+  ]"
+/>
+
+<BatchCheck id="ch06-b1" label="الدفعة 1 (ص 253–257): مقدمة الفصل وRAG Architecture" />
