@@ -649,11 +649,6 @@ mjx-container {
    Mobile Optimization & Responsive Layout (< 768px / < 960px)
    ========================================================= */
 @media (max-width: 768px) {
-  body,
-  .VPContent {
-    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
-  }
-
   .VPNavBar .wrapper {
     padding: 0 14px !important;
   }
@@ -672,22 +667,14 @@ mjx-container {
   }
 
   .VPDoc {
-    padding: 16px 14px 90px !important;
+    padding: 16px 14px 60px !important;
   }
 
   .VPDoc .content {
     padding: 0 !important;
   }
 
-  .vp-doc h1,
-.vp-doc h2,
-.vp-doc h3,
-.vp-doc h4,
-.vp-doc [id] {
-  scroll-margin-top: calc(var(--vp-nav-height) + 18px);
-}
-
-.vp-doc h1 {
+  .vp-doc h1 {
     font-size: 1.75rem !important;
     line-height: 1.4 !important;
   }
@@ -708,10 +695,15 @@ mjx-container {
     line-height: 1.85 !important;
   }
 
-  /* Hide redundant desktop-only buttons on mobile */
-  .aie-focus-btn,
-  .aie-back-top {
+  .aie-focus-btn {
     display: none !important;
+  }
+
+  .aie-back-top {
+    bottom: 20px !important;
+    left: 18px !important;
+    padding: 7px 12px !important;
+    font-size: 0.8rem !important;
   }
 
   .vp-doc .custom-block {
