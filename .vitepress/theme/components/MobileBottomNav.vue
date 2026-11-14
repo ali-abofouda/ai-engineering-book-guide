@@ -1,24 +1,34 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vitepress'
+import { computed } from 'vue'
+import { withBase, useRoute } from 'vitepress'
 
 const route = useRoute()
-const focusMode = ref(false)
 
-const STORAGE_FOCUS = 'aie-focus-mode-v1'
+const isHome = computed(() => {
+  const p = route.path
+  return p === '/' || p === withBase('/') || p.endsWith('/index.html') || p === withBase('')
+})
 
-function applyFocusMode(enabled: boolean) {
+const isPlan = computed(() => {
+  return route.path.toUpperCase().includes('READING_PLAN')
+})
+
+const isNotes = computed(() => {
+  return route.path.includes('/notes/')
+})
+
+function toggleMobileMenu() {
   if (typeof document === 'undefined') return
-  document.documentElement.classList.toggle('aie-focus-mode', enabled)
-}
-
-function toggleFocus() {
-  focusMode.value = !focusMode.value
-  applyFocusMode(focusMode.value)
-  try {
-    window.localStorage.setItem(STORAGE_FOCUS, focusMode.value ? '1' : '0')
-  } catch {
-    // ignore
+  // If inside documentation with sidebar, trigger the sidebar menu button
+  const localNavBtn = document.querySelector('.VPLocalNav .menu') as HTMLElement | null
+  if (localNavBtn && window.getComputedStyle(localNavBtn).display !== 'none') {
+    localNavBtn.click()
+    return
+  }
+  // Otherwise trigger top navbar hamburger screen
+  const hamburger = document.querySelector('.VPNavBarHamburger') as HTMLElement | null
+  if (hamburger) {
+    hamburger.click()
   }
 }
 
@@ -26,65 +36,57 @@ function scrollToTop() {
   if (typeof window === 'undefined') return
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
-
-onMounted(() => {
-  try {
-    const savedFocus = window.localStorage.getItem(STORAGE_FOCUS)
-    if (savedFocus === '1') {
-      focusMode.value = true
-      applyFocusMode(true)
-    }
-  } catch {
-    // ignore
-  }
-})
 </script>
 
 <template>
   <nav class="aie-mobile-bottom-nav" dir="rtl" aria-label="شريط التنقل السريع للهاتف">
+    <!-- Home -->
     <a
-      href="/ai-engineering-book-guide/"
+      :href="withBase('/')"
       class="aie-nav-tab"
-      :class="{ 'is-active': route.path === '/' || route.path === '/ai-engineering-book-guide/' }"
+      :class="{ 'is-active': isHome }"
     >
       <span class="aie-tab-icon">🏠</span>
       <span class="aie-tab-label">الرئيسية</span>
     </a>
 
+    <!-- Reading Plan -->
     <a
-      href="/ai-engineering-book-guide/reading-plan"
+      :href="withBase('/READING_PLAN')"
       class="aie-nav-tab"
-      :class="{ 'is-active': route.path.includes('reading-plan') }"
+      :class="{ 'is-active': isPlan }"
     >
       <span class="aie-tab-icon">📋</span>
       <span class="aie-tab-label">الخطة</span>
     </a>
 
+    <!-- Notes (Current Chapter) -->
     <a
-      href="/ai-engineering-book-guide/notes/ch06-rag-and-agents/01-rag"
+      :href="withBase('/notes/ch06-rag-and-agents/01-rag')"
       class="aie-nav-tab"
-      :class="{ 'is-active': route.path.includes('notes') }"
+      :class="{ 'is-active': isNotes }"
     >
       <span class="aie-tab-icon">📖</span>
       <span class="aie-tab-label">الملاحظات</span>
     </a>
 
+    <!-- Chapters & Sections Sidebar / Menu Toggle -->
     <button
       type="button"
       class="aie-nav-tab"
-      :class="{ 'is-active': focusMode }"
-      @click="toggleFocus"
-      title="وضع التركيز"
+      @click="toggleMobileMenu"
+      title="فتح فهرس الفصول ومحتويات الصفحة"
     >
-      <span class="aie-tab-icon">{{ focusMode ? '👁️' : '🎯' }}</span>
-      <span class="aie-tab-label">{{ focusMode ? 'عادي' : 'تركيز' }}</span>
+      <span class="aie-tab-icon">📑</span>
+      <span class="aie-tab-label">الفهرس</span>
     </button>
 
+    <!-- Scroll to Top -->
     <button
       type="button"
       class="aie-nav-tab"
       @click="scrollToTop"
-      title="الرجوع للأعلى"
+      title="الرجوع لأعلى الصفحة"
     >
       <span class="aie-tab-icon">🔝</span>
       <span class="aie-tab-label">للأعلى</span>
@@ -106,7 +108,7 @@ onMounted(() => {
     right: 0;
     height: calc(58px + env(safe-area-inset-bottom, 0px));
     padding: 0 8px env(safe-area-inset-bottom, 0px);
-    background: rgba(250, 249, 245, 0.92);
+    background: rgba(250, 249, 245, 0.94);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid var(--vp-c-divider);
@@ -118,7 +120,7 @@ onMounted(() => {
 
   :root.dark .aie-mobile-bottom-nav,
   .dark .aie-mobile-bottom-nav {
-    background: rgba(9, 13, 22, 0.9);
+    background: rgba(9, 13, 22, 0.94);
     border-top-color: var(--vp-c-divider);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
   }
@@ -145,12 +147,12 @@ onMounted(() => {
   }
 
   .aie-tab-icon {
-    font-size: 1.15rem;
+    font-size: 1.18rem;
     line-height: 1.2;
   }
 
   .aie-tab-label {
-    font-size: 0.68rem;
+    font-size: 0.7rem;
     font-weight: 600;
     margin-top: 2px;
   }

@@ -420,6 +420,14 @@ html.aie-focus-mode .VPDoc .content-container {
   margin: 0.35em 0;
 }
 
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3,
+.vp-doc h4,
+.vp-doc [id] {
+  scroll-margin-top: calc(var(--vp-nav-height) + 18px);
+}
+
 .vp-doc h1 {
   font-size: 2.25rem;
   font-weight: 800;
@@ -671,7 +679,15 @@ mjx-container {
     padding: 0 !important;
   }
 
-  .vp-doc h1 {
+  .vp-doc h1,
+.vp-doc h2,
+.vp-doc h3,
+.vp-doc h4,
+.vp-doc [id] {
+  scroll-margin-top: calc(var(--vp-nav-height) + 18px);
+}
+
+.vp-doc h1 {
     font-size: 1.75rem !important;
     line-height: 1.4 !important;
   }
@@ -688,8 +704,14 @@ mjx-container {
 
   .vp-doc p,
   .vp-doc li {
-    font-size: 0.98rem !important;
+    font-size: calc(0.98rem * var(--aie-doc-font-scale)) !important;
     line-height: 1.85 !important;
+  }
+
+  /* Hide redundant desktop-only buttons on mobile */
+  .aie-focus-btn,
+  .aie-back-top {
+    display: none !important;
   }
 
   .vp-doc .custom-block {
