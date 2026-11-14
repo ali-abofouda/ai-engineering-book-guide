@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useData } from 'vitepress'
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { useData, useRoute } from 'vitepress'
 
 const { frontmatter } = useData()
+const route = useRoute()
 
 const fontScale = ref(1)
 const focusMode = ref(false)
 const showBackToTop = ref(false)
+const readingTimeMinutes = ref(0)
+const totalWords = ref(0)
 
 const STORAGE_FONT = 'aie-font-scale-v1'
 const STORAGE_FOCUS = 'aie-focus-mode-v1'
@@ -62,6 +65,30 @@ function onScroll() {
   showBackToTop.value = window.scrollY > 360
 }
 
+function calculateReadingStats() {
+  if (typeof document === 'undefined') return
+  const docEl = document.querySelector('.vp-doc')
+  if (!docEl) {
+    readingTimeMinutes.value = 0
+    totalWords.value = 0
+    return
+  }
+  const text = docEl.textContent || ''
+  const words = text.trim().split(/\s+/).filter(Boolean).length
+  totalWords.value = words
+  // Average reading speed ~ 160 words/min for bilingual technical text
+  readingTimeMinutes.value = Math.max(1, Math.ceil(words / 160))
+}
+
+watch(
+  () => route.path,
+  () => {
+    nextTick(() => {
+      setTimeout(calculateReadingStats, 100)
+    })
+  }
+)
+
 onMounted(() => {
   try {
     const savedFont = window.localStorage.getItem(STORAGE_FONT)
@@ -80,8 +107,13 @@ onMounted(() => {
   } catch {
     // ignore
   }
+
   onScroll()
   window.addEventListener('scroll', onScroll, { passive: true })
+
+  nextTick(() => {
+    setTimeout(calculateReadingStats, 150)
+  })
 })
 
 onUnmounted(() => {
@@ -92,24 +124,43 @@ onUnmounted(() => {
 
 <template>
   <div v-if="frontmatter.layout !== 'home'" class="aie-reader-toolbar" dir="rtl">
-    <div class="aie-reader-group">
-      <span class="aie-reader-label">حجم الخط:</span>
-      <button type="button" class="aie-tool-btn" @click="changeFont(-0.08)" title="تصغير الخط">A-</button>
-      <button type="button" class="aie-tool-btn" @click="resetFont" title="الحجم الافتراضي">
-        {{ Math.round(fontScale * 100) }}%
-      </button>
-      <button type="button" class="aie-tool-btn" @click="changeFont(0.08)" title="تكبير الخط">A+</button>
+    <!-- Reading Stats Badge -->
+    <div v-if="totalWords > 0" class="aie-reading-stats">
+      <span class="aie-stat-item">
+        <span class="aie-stat-icon">⏱️</span>
+        <span>~{{ readingTimeMinutes }} دقيقة قراءة</span>
+      </span>
+      <span class="aie-stat-divider">•</span>
+      <span class="aie-stat-item">
+        <span class="aie-stat-icon">📝</span>
+        <span>{{ totalWords.toLocaleString('ar-EG') }} كلمة</span>
+      </span>
     </div>
 
-    <button
-      type="button"
-      class="aie-tool-btn aie-focus-btn"
-      :class="{ active: focusMode }"
-      @click="toggleFocus"
-      title="إخفاء القوائم الجانبية لقراءة أهدأ"
-    >
-      {{ focusMode ? '✓ وضع التركيز مفعّل' : 'وضع التركيز' }}
-    </button>
+    <!-- Actions & Controls -->
+    <div class="aie-controls-group">
+      <!-- Font Scale Controls -->
+      <div class="aie-font-box">
+        <span class="aie-box-label">الخط</span>
+        <button type="button" class="aie-tool-btn" @click="changeFont(-0.08)" title="تصغير الخط">A-</button>
+        <button type="button" class="aie-tool-btn aie-font-val" @click="resetFont" title="إعادة ضبط حجم الخط">
+          {{ Math.round(fontScale * 100) }}%
+        </button>
+        <button type="button" class="aie-tool-btn" @click="changeFont(0.08)" title="تكبير الخط">A+</button>
+      </div>
+
+      <!-- Focus Mode Toggle -->
+      <button
+        type="button"
+        class="aie-tool-btn aie-focus-btn"
+        :class="{ active: focusMode }"
+        @click="toggleFocus"
+        title="إخفاء القوائم الجانبية لتوفير مساحة قراءة واسعة وهادئة"
+      >
+        <span class="aie-focus-icon">{{ focusMode ? '✓' : '🎯' }}</span>
+        <span>{{ focusMode ? 'وضع التركيز مفعّل' : 'وضع التركيز' }}</span>
+      </button>
+    </div>
   </div>
 
   <Teleport to="body">
@@ -131,67 +182,142 @@ onUnmounted(() => {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 8px 14px;
-  margin-bottom: 18px;
-  border-radius: 10px;
+  gap: 12px;
+  padding: 10px 16px;
+  margin-bottom: 22px;
+  border-radius: 14px;
+  background: var(--vp-c-bg-elv);
+  border: 1px solid var(--vp-c-divider);
+  box-shadow: var(--aie-card-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.aie-reading-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--vp-c-text-2);
+}
+
+.aie-stat-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.aie-stat-icon {
+  font-size: 0.95rem;
+}
+
+.aie-stat-divider {
+  color: var(--vp-c-divider);
+  font-weight: 700;
+}
+
+.aie-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aie-font-box {
+  display: flex;
+  align-items: center;
+  gap: 3px;
   background: var(--vp-c-bg-soft);
+  padding: 3px 6px;
+  border-radius: 10px;
   border: 1px solid var(--vp-c-divider);
 }
 
-.aie-reader-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.aie-reader-label {
-  font-size: 0.82rem;
-  color: var(--vp-c-text-2);
+.aie-box-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--vp-c-text-3);
   margin-left: 4px;
+  margin-right: 2px;
 }
 
 .aie-tool-btn {
-  padding: 4px 10px;
+  padding: 4px 9px;
   border-radius: 7px;
   border: 1px solid var(--vp-c-divider);
-  background: var(--vp-c-bg);
+  background: var(--vp-c-bg-elv);
   color: var(--vp-c-text-1);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background-color 0.15s;
+  transition: all 0.16s ease;
+  line-height: 1.4;
+}
+
+.aie-font-val {
+  min-width: 44px;
+  text-align: center;
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.78rem;
 }
 
 .aie-tool-btn:hover {
   border-color: var(--vp-c-brand-1);
   color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+}
+
+.aie-focus-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9px;
+  font-size: 0.84rem;
 }
 
 .aie-focus-btn.active {
   background: var(--vp-c-brand-3);
   border-color: var(--vp-c-brand-3);
   color: #ffffff;
+  box-shadow: 0 2px 10px rgba(15, 118, 110, 0.3);
 }
 
 .aie-back-top {
   position: fixed;
-  bottom: 22px;
-  left: 22px;
+  bottom: 26px;
+  left: 26px;
   z-index: 90;
-  padding: 8px 14px;
+  padding: 9px 16px;
   border-radius: 999px;
   background: var(--vp-c-brand-3);
   color: #ffffff;
-  border: none;
-  font-size: 0.84rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.86rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
-  transition: transform 0.15s, opacity 0.15s;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  transition: transform 0.18s ease, background-color 0.18s ease;
+  backdrop-filter: blur(8px);
 }
 
 .aie-back-top:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  background: var(--vp-c-brand-2);
+}
+
+@media (max-width: 768px) {
+  .aie-reader-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .aie-controls-group {
+    justify-content: space-between;
+  }
+  .aie-back-top {
+    bottom: 74px; /* above mobile bottom nav */
+    left: 16px;
+  }
 }
 </style>

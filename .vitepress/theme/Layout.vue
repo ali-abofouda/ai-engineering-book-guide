@@ -3,6 +3,7 @@ import DefaultTheme from 'vitepress/theme'
 import ReadingProgressBar from './components/ReadingProgressBar.vue'
 import ReaderControls from './components/ReaderControls.vue'
 import MermaidZoom from './components/MermaidZoom.vue'
+import MobileBottomNav from './components/MobileBottomNav.vue'
 
 const { Layout } = DefaultTheme
 </script>
@@ -17,6 +18,7 @@ const { Layout } = DefaultTheme
     </template>
     <template #layout-bottom>
       <MermaidZoom />
+      <MobileBottomNav />
     </template>
   </Layout>
 </template>
