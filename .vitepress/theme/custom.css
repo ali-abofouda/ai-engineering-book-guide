@@ -76,6 +76,12 @@
 /* =========================================================
    Global Sleek Scrollbar & Selection
    ========================================================= */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -629,4 +635,126 @@ mjx-container {
 
 .vp-doc tbody tr:hover {
   background: var(--vp-c-brand-soft);
+}
+
+/* =========================================================
+   Mobile Optimization & Responsive Layout (< 768px / < 960px)
+   ========================================================= */
+@media (max-width: 768px) {
+  body,
+  .VPContent {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .VPNavBar .wrapper {
+    padding: 0 14px !important;
+  }
+
+  .VPNavBarTitle .title {
+    font-size: 0.94rem !important;
+    max-width: calc(100vw - 120px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .VPNavBarTitle .logo {
+    height: 26px !important;
+    width: 26px !important;
+  }
+
+  .VPDoc {
+    padding: 16px 14px 90px !important;
+  }
+
+  .VPDoc .content {
+    padding: 0 !important;
+  }
+
+  .vp-doc h1 {
+    font-size: 1.75rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .vp-doc h2 {
+    font-size: 1.38rem !important;
+    margin-top: 2.2rem !important;
+  }
+
+  .vp-doc h3 {
+    font-size: 1.15rem !important;
+    padding: 8px 14px !important;
+  }
+
+  .vp-doc p,
+  .vp-doc li {
+    font-size: 0.98rem !important;
+    line-height: 1.85 !important;
+  }
+
+  .vp-doc .custom-block {
+    padding: 14px 16px !important;
+    margin: 1.2rem 0 !important;
+  }
+
+  .vp-doc blockquote {
+    padding: 12px 14px !important;
+  }
+
+  /* Mobile Horizontal Table Scroll */
+  .vp-doc table {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  /* MathJax Mobile Containment */
+  mjx-container {
+    display: block !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    padding: 6px 0 !important;
+  }
+
+  /* Code Block Mobile Width */
+  .vp-doc div[class*='language-'] {
+    margin: 1.2rem -4px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Mermaid Mobile Fit */
+  .vp-doc .mermaid {
+    padding: 16px 12px !important;
+    margin: 18px 0 !important;
+    overflow-x: auto !important;
+  }
+}
+
+@media (max-width: 960px) {
+  .VPSidebar {
+    right: 0 !important;
+    left: auto !important;
+    width: min(300px, 86vw) !important;
+    max-width: 300px !important;
+    top: var(--vp-nav-height) !important;
+    height: calc(100vh - var(--vp-nav-height)) !important;
+    z-index: 70 !important;
+    background-color: var(--vp-sidebar-bg-color) !important;
+    box-shadow: -8px 0 28px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .VPSidebarBackdrop,
+  .VPBackdrop {
+    z-index: 65 !important;
+  }
+
+  .VPNavScreen {
+    z-index: 68 !important;
+    padding-bottom: 80px !important;
+  }
 }

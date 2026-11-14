@@ -104,16 +104,16 @@ onMounted(() => {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 60px;
-    background: rgba(250, 249, 245, 0.88);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    height: calc(58px + env(safe-area-inset-bottom, 0px));
+    padding: 0 8px env(safe-area-inset-bottom, 0px);
+    background: rgba(250, 249, 245, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid var(--vp-c-divider);
-    z-index: 99;
+    z-index: 55;
     align-items: center;
     justify-content: space-around;
-    padding: 0 8px;
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.06);
   }
 
   :root.dark .aie-mobile-bottom-nav,

@@ -70,4 +70,28 @@ defineProps<{
   color: var(--vp-c-text-2);
   font-weight: 500;
 }
+@media (max-width: 640px) {
+  .aie-batch-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 12px;
+    gap: 8px;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .aie-batch-nav::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+
+  .aie-batch-nav-title {
+    flex-shrink: 0;
+  }
+
+  .aie-batch-pill {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+  }
+}
 </style>

@@ -520,4 +520,57 @@ const ch06 = computed(() => CHAPTERS_PLAN.find((c) => c.id === 'ch06'))
   color: var(--vp-c-text-2);
   margin-top: 2px;
 }
+
+@media (max-width: 640px) {
+  .aie-continue-card {
+    padding: 16px;
+  }
+
+  .aie-continue-info h3 {
+    font-size: 1.1rem;
+  }
+
+  .aie-continue-actions {
+    flex-direction: column;
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .aie-btn-primary,
+  .aie-btn-secondary {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+  }
+
+  .aie-stat-card,
+  .aie-panel {
+    padding: 14px 16px;
+  }
+
+  .aie-stat-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .aie-batch-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .aie-batch-meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .aie-weeks-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
