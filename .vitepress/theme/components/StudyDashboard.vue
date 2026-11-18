@@ -47,15 +47,15 @@ const ch06 = computed(() => CHAPTERS_PLAN.find((c) => c.id === 'ch06'))
     <!-- Continue Reading Banner -->
     <div class="aie-continue-card">
       <div class="aie-continue-info">
-        <span class="aie-badge-live">متاح الآن • آخر دفعة (خاتمة الـ RAG)</span>
-        <h3>كمل قراءة: Chapter 6 — الدفعة 5 (ص 273–275)</h3>
+        <span class="aie-badge-live">متاح الآن • الجزء الثاني (الوكلاء الأذكياء)</span>
+        <h3>كمل قراءة: Chapter 6 — الدفعة 6 (ص 275–281)</h3>
         <p>
-          الـ RAG لما بعد النصوص: الوسائط المتعددة (<code>Multimodal RAG</code> مع <code>CLIP</code>) والبيانات الجدولية المنظمة (<code>Tabular Text-to-SQL</code>).
+          مدخل الوكلاء الأذكياء (<code>AI Agents</code>)، بيئة العمل، الأخطاء التراكمية المركبة، وترسانة الأدوات (<code>Tool Inventory & Write Actions</code>).
         </p>
       </div>
       <div class="aie-continue-actions">
-        <a :href="withBase('/notes/ch06-rag-and-agents/01-rag#batch-5')" class="aie-btn-primary">
-          افتح الدفعة 5 ←
+        <a :href="withBase('/notes/ch06-rag-and-agents/02-agents#batch-6')" class="aie-btn-primary">
+          افتح الدفعة 6 ←
         </a>
         <a :href="withBase('/READING_PLAN')" class="aie-btn-secondary">
           خطة الـ 5 أسابيع

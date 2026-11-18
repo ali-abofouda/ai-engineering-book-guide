@@ -79,7 +79,8 @@ export const CHAPTERS_PLAN: ChapterItem[] = [
         title: 'الدفعة 6: Agent Overview & Tools',
         pagesRange: '275–281',
         pageCount: 7,
-        available: false,
+        link: '/notes/ch06-rag-and-agents/02-agents#batch-6',
+        available: true,
       },
       {
         id: 'ch06-b7',

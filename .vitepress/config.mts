@@ -65,6 +65,7 @@ export default withMermaid(
           text: 'الأسبوع 1: Ch. 6 — RAG & Agents',
           items: [
             { text: 'الجزء 1: الـ RAG (ص 253–275)', link: '/notes/ch06-rag-and-agents/01-rag' },
+            { text: 'الجزء 2: الوكلاء الأذكياء — Agents (ص 275–300)', link: '/notes/ch06-rag-and-agents/02-agents' },
           ],
         },
       ],
