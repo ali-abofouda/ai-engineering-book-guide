@@ -87,7 +87,8 @@ export const CHAPTERS_PLAN: ChapterItem[] = [
         title: 'الدفعة 7: Planning (الجزء 1: Intent, FM vs RL)',
         pagesRange: '282–288',
         pageCount: 7,
-        available: false,
+        link: '/notes/ch06-rag-and-agents/02-agents#batch-7',
+        available: true,
       },
       {
         id: 'ch06-b8',
