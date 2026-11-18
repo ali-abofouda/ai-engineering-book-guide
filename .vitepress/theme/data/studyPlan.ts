@@ -93,9 +93,10 @@ export const CHAPTERS_PLAN: ChapterItem[] = [
       {
         id: 'ch06-b8',
         title: 'الدفعة 8: Planning (الجزء 2: Control Flow, ReAct, Reflexion)',
-        pagesRange: '289–294',
-        pageCount: 6,
-        available: false,
+        pagesRange: '288–294',
+        pageCount: 7,
+        link: '/notes/ch06-rag-and-agents/02-agents#batch-8',
+        available: true,
       },
       {
         id: 'ch06-b9',
