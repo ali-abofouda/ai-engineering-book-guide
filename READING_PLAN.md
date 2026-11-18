@@ -117,8 +117,8 @@
 - [ ] **Summary** (251)
 
 ### Chapter 6: RAG and Agents (`ص 253–305`) *(نقطة البداية)*
-- [ ] **RAG** (253)
-  - [ ] RAG Architecture (256) | Retrieval Algorithms (257) | Retrieval Optimization (267) | RAG Beyond Texts (273)
+- [x] **RAG** (253)
+  - [x] RAG Architecture (256) | Retrieval Algorithms (257) | Retrieval Optimization (267) | RAG Beyond Texts (273)
 - [ ] **Agents** (275)
   - [ ] Agent Overview (276) | Tools (278) | Planning (281) | Agent Failure Modes and Evaluation (298)
 - [ ] **Memory** (300)

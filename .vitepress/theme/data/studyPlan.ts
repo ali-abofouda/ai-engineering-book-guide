@@ -71,7 +71,8 @@ export const CHAPTERS_PLAN: ChapterItem[] = [
         title: 'الدفعة 5: RAG Beyond Texts (Multimodal & Tabular/SQL)',
         pagesRange: '273–275',
         pageCount: 3,
-        available: false,
+        link: '/notes/ch06-rag-and-agents/01-rag#batch-5',
+        available: true,
       },
       {
         id: 'ch06-b6',
